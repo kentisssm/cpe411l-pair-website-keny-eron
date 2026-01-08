@@ -1,0 +1,50 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #111;
+  color: #fff;
+  text-align: center;
+  padding: 30px;
+}
+
+.game-container {
+  max-width: 500px;
+  margin: auto;
+}
+
+.slot-machine {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.reel {
+  width: 80px;
+  height: 80px;
+  margin: 0 10px;
+  border: 2px solid #fff;
+  border-radius: 10px;
+  font-size: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #222;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 18px;
+  background: red;
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.upload-section {
+  margin-top: 30px;
+}
+
+#imagePreview img {
+  height: 40px;
+  margin: 5px;
+}
