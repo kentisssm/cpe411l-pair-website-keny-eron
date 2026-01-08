@@ -1,0 +1,24 @@
+<?php
+$conn = new mysqli("localhost", "root", "", "login");
+
+if ($conn->connect_error) {
+  die("Connection failed: " . $conn->connect_error);
+}
+
+$username = $_POST['username'];
+$password = $_POST['password'];
+
+$stmt = $conn->prepare("SELECT * FROM login_users WHERE username = ? AND password = ?");
+$stmt->bind_param("ss", $username, $password);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows > 0) {
+  echo "Login successful";
+} else {
+  echo "Invalid username or password";
+}
+
+$stmt->close();
+$conn->close();
+?>
