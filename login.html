@@ -1,0 +1,289 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Sedgwick+Ave&display=swap" rel="stylesheet">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login & Register</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: white;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #0f1b2b;
+      position: relative;
+      overflow: hidden;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-image: url('https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExb3AzOHVucDExcW5ucWVxZTFpa3g0cmpiYTViaWxlYzcxczFwNzM0OSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Sb7WSbjHFNIL6/giphy.gif');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.6;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    @keyframes rgbBackground {
+      0%   { background-color: rgba(255, 0, 0, 0.25); }
+      25%  { background-color: rgba(0, 255, 0, 0.25); }
+      50%  { background-color: rgba(0, 0, 255, 0.25); }
+      75%  { background-color: rgba(255, 255, 0, 0.25); }
+      100% { background-color: rgba(255, 0, 255, 0.25); }
+    }
+
+    .form-container {
+      animation: rgbBackground 10s infinite linear;
+      padding: 50px 50px;
+      border-radius: 15px;
+      box-shadow: 0 0 25px rgba(0,0,0,0.8);
+      width: 400px;
+      box-sizing: border-box;
+      text-align: center;
+      backdrop-filter: blur(5px);
+      transition: background-color 1s ease-in-out;
+    }
+
+    input {
+      margin: 12px 0;
+      padding: 12px;
+      width: 100%;
+      border: 1px solid white;
+      border-radius: 8px;
+      background: transparent;
+      color: white;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    input::placeholder {
+      color: white;
+      opacity: 0.7;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 12px 20px;
+      border: 1px solid white;
+      background: transparent;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 16px;
+      width: 100%;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: white;
+      color: #0f1b2b;
+    }
+
+    .toggle-register {
+      margin-top: 15px;
+      font-size: 14px;
+      text-decoration: underline;
+      cursor: pointer;
+      color: #80b3ff;
+      user-select: none;
+    }
+
+    #popup-message {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #ff4d4d;
+      color: white;
+      padding: 15px 25px;
+      border-radius: 8px;
+      font-weight: 600;
+      box-shadow: 0 2px 12px rgba(255, 77, 77, 0.75);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease, background-color 0.3s ease;
+      z-index: 1000;
+      min-width: 280px;
+      text-align: center;
+      user-select: none;
+    }
+
+    #popup-message.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    #popup-message.success {
+      background-color: #33cc33;
+      box-shadow: 0 2px 12px rgba(51, 204, 51, 0.75);
+    }
+
+    h2 {
+      font-family: 'Orbitron';
+      font-size: 40px;
+      margin-bottom: 20px;
+    }
+
+    .logo-container {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      display: flex;
+      align-items: center;
+    }
+
+    .logo-container img {
+      height: 100px;
+      margin-right: 10px;
+    }
+
+    .logo-container span {
+     font-family: 'Orbitron', cursive;
+      font-size: 30px;
+      font-weight: bold;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+
+  <div class="form-container" id="login-form">
+    <h2>Login</h2>
+    <input type="email" id="login-username" placeholder="Email" autocomplete="username" />
+    <input type="password" id="login-password" placeholder="Password" autocomplete="current-password" />
+    <button onclick="login()">LOGIN</button>
+    <div class="toggle-register" onclick="showRegisterForm()">Don't have an account? Register</div>
+  </div>
+
+  <div class="form-container" id="register-form" style="display:none;">
+    <h2>Register</h2>
+    <input type="email" id="register-username" placeholder="Email" autocomplete="username" />
+    <input type="password" id="register-password" placeholder="Password" autocomplete="new-password" />
+    <button onclick="register()">REGISTER</button>
+    <div class="toggle-register" onclick="showLoginForm()">Already have an account? Login</div>
+  </div>
+
+  <div id="popup-message"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    const supabaseUrl = 'https://aqgutqvvdnvtvustxiqs.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFxZ3V0cXZ2ZG52dHZ1c3R4aXFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc5MjYyNTEsImV4cCI6MjA2MzUwMjI1MX0.KkoPaSaYuvQ2sxQQfWn9sN5qnfRxQAKcWCFuS22uMNg';
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+    function showRegisterForm() {
+      document.getElementById('login-form').style.display = 'none';
+      document.getElementById('register-form').style.display = 'block';
+      clearInputs();
+    }
+
+    function showLoginForm() {
+      document.getElementById('login-form').style.display = 'block';
+      document.getElementById('register-form').style.display = 'none';
+      clearInputs();
+    }
+
+    function clearInputs() {
+      document.getElementById('login-username').value = '';
+      document.getElementById('login-password').value = '';
+      document.getElementById('register-username').value = '';
+      document.getElementById('register-password').value = '';
+    }
+
+    function showPopupMessage(message, isSuccess = false, duration = 3000) {
+      const popup = document.getElementById('popup-message');
+      popup.textContent = message;
+      popup.classList.toggle('success', isSuccess);
+      popup.classList.add('show');
+
+      clearTimeout(popup.hideTimeout);
+      popup.hideTimeout = setTimeout(() => {
+        popup.classList.remove('show');
+        popup.classList.remove('success');
+      }, duration);
+    }
+
+async function login() {
+      const email = document.getElementById('login-username').value;
+      const password = document.getElementById('login-password').value;
+
+      if (!email || !password) {
+        showPopupMessage('Please enter email and password.');
+        return;
+      }
+
+      try {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+        console.log('Login result:', { data, error });
+
+        if (error) {
+          showPopupMessage(`Error: ${error.message}`);
+          return;
+        }
+
+        window.location.href = 'homepage.html';
+      } catch (err) {
+        console.error('Unexpected error during login:', err);
+        showPopupMessage('An unexpected error occurred during login.');
+      }
+}
+
+async function register() {
+  const email = document.getElementById('register-username').value;
+  const password = document.getElementById('register-password').value;
+
+  if (!email || !password) {
+    showPopupMessage('Please enter email and password.');
+    return;
+  }
+
+  if (password.length < 6) {
+    showPopupMessage('Password must be at least 6 characters long.');
+    return;
+  }
+
+  try {
+    const { data, error } = await supabaseClient.auth.signUp({ email, password });
+
+    if (error) {
+      showPopupMessage(`Error: ${error.message}`);
+      return;
+    }
+
+    if (data.user && !data.user.confirmed_at) {
+      showPopupMessage('Check your email to confirm your registration.', true);
+    } else {
+      showPopupMessage('Registration successful!', true);
+    }
+
+    setTimeout(() => {
+      showLoginForm();
+    }, 2000);
+  } catch (err) {
+    console.error('Unexpected error during registration:', err);
+    showPopupMessage('An unexpected error occurred during registration.');
+  }
+}
+  </script>
+</body>
+</html>
